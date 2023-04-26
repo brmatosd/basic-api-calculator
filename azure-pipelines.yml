@@ -1,4 +1,5 @@
 # Maven
+
 # Build your Java project and run tests with Apache Maven.
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/java
@@ -7,18 +8,50 @@ trigger:
 - main
 
 pool:
-  name: Default 
+  name: Default
 
-steps:
-- script: |
-    echo "##vso[task.setvariable variable=JAVA_HOME]$(JAVA_HOME_8_X64)"
-    echo "##vso[task.setvariable variable=PATH]$(JAVA_HOME_8_X64)/bin:$(PATH)"
-  displayName: "Set java version"
-- task: Maven@3
-  inputs:
-    mavenPomFile: 'pom.xml'
-    mavenOptions: '-Xmx3072m'
-    javaHomeOption: 'JDKVersion'
-    publishJUnitResults: true
-    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    goals: 'package'
+stages:
+- stage: Build
+  displayName: CI - Build Stage
+  jobs:
+  - job: Build
+    displayName: Build
+    steps:
+    - script: |
+        echo "##vso[task.setvariable variable=JAVA_HOME]$(JAVA_HOME_11_X64)"
+        echo "##vso[task.setvariable variable=PATH]$(JAVA_HOME_11_X64)/bin:$(PATH)"
+      displayName: "Set java version"
+    - task: Maven@3
+      inputs:
+        mavenPomFile: 'pom.xml'
+        mavenOptions: '-Xmx3072m'
+        javaHomeOption: 'JDKVersion'
+        jdkArchitectureOption: 'x64'
+        publishJUnitResults: true
+        testResultsFiles: '**/surefire-reports/TEST-*.xml'
+        goals: 'package'
+
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: $(System.DefaultWorkingDirectory)
+        artifactName: TestArtifact
+
+- stage: Deploy
+  displayName: CD - Deploy Stage
+  dependsOn: Build
+  condition: succeeded('Build')
+  jobs:
+    - job: Deploy_App_On_VM
+      displayName: Deploy App on VM
+      steps:
+        - task: DownloadBuildArtifacts@1
+          inputs:
+            buildType: 'specific'
+            project: 'a376d429-f3b1-4564-9948-37cb902b756d'
+            pipeline: '17'
+            buildVersionToDownload: 'latest'
+            downloadType: 'specific'
+            downloadPath: '$(System.ArtifactsDirectory)'
+        - script: |
+            scp -i ~/.ssh/java-test-vm_key.pem $(System.ArtifactsDirectory)/TestArtifact/target/spring-boot-example-0.0.1-SNAPSHOT.war azureuser@4.201.51.235:/opt/tomcat/webapps
+
