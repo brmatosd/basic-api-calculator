@@ -46,11 +46,8 @@ stages:
       steps:
         - task: DownloadBuildArtifacts@1
           inputs:
-            buildType: 'specific'
-            project: 'a376d429-f3b1-4564-9948-37cb902b756d'
-            pipeline: '17'
-            buildVersionToDownload: 'latest'
+            buildType: 'current'
             downloadType: 'specific'
             downloadPath: '$(System.ArtifactsDirectory)'
         - script: |
-            scp -i ~/.ssh/java-test-vm_key.pem $(System.ArtifactsDirectory)/TestArtifact/target/spring-boot-example-0.0.1-SNAPSHOT.war azureuser@4.201.51.235:/opt/tomcat/webapps
+            scp -i ~/.ssh/java-test-vm_key.pem $(System.ArtifactsDirectory)/TestArtifact/target/basic-api-calculator-0.0.1-SNAPSHOT.war azureuser@4.201.51.235:/opt/tomcat/webapps
