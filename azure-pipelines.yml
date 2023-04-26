@@ -54,4 +54,3 @@ stages:
             downloadPath: '$(System.ArtifactsDirectory)'
         - script: |
             scp -i ~/.ssh/java-test-vm_key.pem $(System.ArtifactsDirectory)/TestArtifact/target/spring-boot-example-0.0.1-SNAPSHOT.war azureuser@4.201.51.235:/opt/tomcat/webapps
-
