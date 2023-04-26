@@ -50,4 +50,4 @@ stages:
             downloadType: 'specific'
             downloadPath: '$(System.ArtifactsDirectory)'
         - script: |
-            scp -i ~/.ssh/java-test-vm_key.pem $(System.ArtifactsDirectory)/TestArtifact/target/basic-api-calculator-0.0.1-SNAPSHOT.war azureuser@4.201.51.235:/opt/tomcat/webapps
+            scp -i ~/.ssh/java-test-vm_key.pem $(System.ArtifactsDirectory)/TestArtifact/target/api-rest-project-0.0.1-SNAPSHOT.war azureuser@4.201.51.235:/opt/tomcat/webapps
