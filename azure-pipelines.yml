@@ -8,7 +8,7 @@ trigger:
 - main
 
 pool:
-  name: Default
+  name: Local Linux
 
 stages:
 - stage: Build
