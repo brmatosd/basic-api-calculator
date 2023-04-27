@@ -21,22 +21,20 @@ stages:
         echo "##vso[task.setvariable variable=JAVA_HOME]$(JAVA_HOME_11_X64)"
         echo "##vso[task.setvariable variable=PATH]$(JAVA_HOME_11_X64)/bin:$(PATH)"
       displayName: "Set Java Version"
-    - task: Maven@4
+    - task: Maven@3
       inputs:
         mavenPomFile: 'pom.xml'
+        mavenOptions: '-Xmx3072m'
+        javaHomeOption: 'JDKVersion'
+        jdkArchitectureOption: 'x64'
         publishJUnitResults: true
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
-        javaHomeOption: 'JDKVersion'
-        mavenVersionOption: 'Default'
-        mavenAuthenticateFeed: false
-        effectivePomSkip: false
-        sonarQubeRunAnalysis: false
         goals: 'package'
 
-    - task: PublishBuildArtifacts@1
+    - task: PublishPipelineArtifact@1
       inputs:
-        PathtoPublish: '$(System.DefaultWorkingDirectory)'
-        ArtifactName: 'BuildArtifact'
+        targetPath: $(System.DefaultWorkingDirectory)
+        artifactName: TestArtifact
 
 - stage: Deploy
   displayName: CD - Deploy Stage
@@ -52,7 +50,7 @@ stages:
             downloadType: 'specific'
             downloadPath: '$(System.ArtifactsDirectory)'
         - script: |
-            scp -i ~/Documents/java-vm-key.pem $(System.ArtifactsDirectory)/BuildArtifact/target/api-rest-project-0.0.1-SNAPSHOT.war azureuser@20.226.10.251:/opt/tomcat/webapps
+            scp -i ~/Documents/java-vm-key.pem $(System.ArtifactsDirectory)/TestArtifact/target/api-rest-project-0.0.1-SNAPSHOT.war azureuser@20.197.179.43:/opt/tomcat/webapps
         
         - task: AzureRmWebAppDeployment@4
           inputs:
@@ -60,5 +58,5 @@ stages:
             azureSubscription: 'Testing Service Connection'
             appType: 'webAppLinux'
             WebAppName: 'java-webapp-test'
-            packageForLinux: '$(System.ArtifactsDirectory)/BuildArtifact/target/*.war'
+            packageForLinux: '$(System.ArtifactsDirectory)/TestArtifact/target/*.war'
             RuntimeStack: 'JAVA|11-java11'
