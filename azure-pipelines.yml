@@ -58,5 +58,5 @@ stages:
             azureSubscription: 'Testing Service Connection'
             appType: 'webAppLinux'
             WebAppName: 'java-webapp-test'
-            packageForLinux: '$(System.ArtifactsDirectory)/**/*.war'
+            packageForLinux: '$(System.ArtifactsDirectory)/TestArtifact/target/*.war'
             RuntimeStack: 'JAVA|11-java11'
