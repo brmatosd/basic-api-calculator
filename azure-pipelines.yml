@@ -31,6 +31,7 @@ stages:
         mavenAuthenticateFeed: false
         effectivePomSkip: false
         sonarQubeRunAnalysis: false
+        goals: 'package'
 
     - task: PublishBuildArtifacts@1
       inputs:
