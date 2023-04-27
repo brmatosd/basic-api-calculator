@@ -29,7 +29,7 @@ stages:
         jdkArchitectureOption: 'x64'
         publishJUnitResults: true
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
-        goals: 'clean && package'
+        goals: 'validate'
 
     - task: PublishPipelineArtifact@1
       inputs:
