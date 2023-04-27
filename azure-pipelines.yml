@@ -51,3 +51,12 @@ stages:
             downloadPath: '$(System.ArtifactsDirectory)'
         - script: |
             scp -i ~/Documents/java-vm-key.pem $(System.ArtifactsDirectory)/TestArtifact/target/api-rest-project-0.0.1-SNAPSHOT.war azureuser@20.226.10.251:/opt/tomcat/webapps
+        
+        - task: AzureRmWebAppDeployment@4
+          inputs:
+            ConnectionType: 'AzureRM'
+            azureSubscription: 'Testing Service Connection'
+            appType: 'webAppLinux'
+            WebAppName: 'java-webapp-test'
+            packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+            RuntimeStack: 'JAVA|11-java11'
