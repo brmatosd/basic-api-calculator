@@ -21,19 +21,22 @@ stages:
         echo "##vso[task.setvariable variable=JAVA_HOME]$(JAVA_HOME_11_X64)"
         echo "##vso[task.setvariable variable=PATH]$(JAVA_HOME_11_X64)/bin:$(PATH)"
       displayName: "Set Java Version"
-    - task: Maven@3
+    - task: Maven@4
       inputs:
         mavenPomFile: 'pom.xml'
-        mavenOptions: '-Xmx3072m'
-        jdkArchitectureOption: 'x64'
         publishJUnitResults: true
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
-        goals: 'package'
+        javaHomeOption: 'JDKVersion'
+        mavenVersionOption: 'Default'
+        mavenAuthenticateFeed: false
+        effectivePomSkip: false
+        sonarQubeRunAnalysis: false
 
-    - task: PublishPipelineArtifact@1
+    - task: PublishBuildArtifacts@1
       inputs:
-        targetPath: $(System.DefaultWorkingDirectory)
-        artifactName: TestArtifact
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'JAVA_TEST_Artifact'
+        publishLocation: 'Container'
 
 - stage: Deploy
   displayName: CD - Deploy Stage
