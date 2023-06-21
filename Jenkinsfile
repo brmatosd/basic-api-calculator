@@ -2,6 +2,13 @@ pipeline {
     agent any
 
     stages {
+        stage('STAGE TEST') {
+            steps {
+                echo "Pipeline usando Jenkinsfile"
+            }
+        }
+
+    stages {
         stage('Checkout') {
             steps {
                 git 'https://github.com/brmatosd/basic-api-calculator.git'
